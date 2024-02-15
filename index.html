@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annie-Kim | Travail synthèse</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="app">
+
+        <!-- HEADER / BARRE DE RECHERCHE -->
+        <header>
+            <div class="header-content">
+              <h1 class="header-title">🤍 Chansons aimées</h1>
+              <div class="recherche">
+                <input 
+                  type="text" 
+                  v-model="texte_recherche" 
+                  placeholder="Recherche..."
+                >
+              </div>
+            </div>
+        </header>
+          
+        <!-- LISTE DES CHANSONS & CONTRÔLES -->
+        <div class="player">
+
+            <!-- LISTE DES CHANSONS -->
+            <ul class="song-list" v-for="chanson of filtrer(chansons)">
+                <li @click="lancerAudio(chanson)">
+                    <div class="song-title">{{ chanson.titre }}</div>
+                    <div class="song-artist">{{ chanson.artiste }}</div>
+                    <div class="song-time">{{ formatTime(chanson.temps) }}</div>
+                </li>
+            </ul>
+
+            <!-- CONTRÔLE -->
+            <div class="player-controls">
+                <audio :src="source_audio" autoplay ref="balise_audio" @click="toggleJouer()" @timeupdate="timeUpdate()"></audio>
+
+                <div class="playback-container">
+
+                    <!-- BOUTON PLAY/PAUSE -->
+                    <button class="play-button" @click.prevent="toggleJouer()">
+                        <img v-if="!isPlaying" src="icones/play-solid.svg" alt="Bouton jouer">
+                        <img v-if="isPlaying" src="icones/pause-solid.svg" alt="Bouton pause">
+                    </button>
+                    
+                    <!-- BARRE DE PROGRÈS & POURCENTAGE DE LA PROGRESSION -->
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" :style="{ width: progression + '%' }" :aria-valuenow="progression"></div>
+                        <div class="progress-percentage">{{ progression }} %</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHANSON JOUÉE ACTUELLEMENT ET SES INFOS & BARRE DE VOLUME -->
+        <div class="song-playing" v-if="chanson_en_cours">
+            <img class="song-image" :src="'chansons/' + chanson_en_cours.image" alt="Image de la chanson en cours">
+            <div class="song-details">
+                <div class="song-title">{{ chanson_en_cours.titre }}</div>
+                <div class="song-artist">{{ chanson_en_cours.artiste }}</div>
+                <div class="song-time">{{ updateTempsChanson() }}</div>
+                <div class="song-tags">Tags: {{ chanson_en_cours.tags.join(', ') }}</div>
+                <div class="volume">Volume: <input type="range" min="0" max="1" step="0.1" v-model="volume" class="volume-slider" @input="setVolume()"></div>
+            </div>
+        </div>            
+
+    </div>
+      
+    <script src="js/main.js" type="module"></script>
+</body>
+</html>
